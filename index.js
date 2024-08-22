@@ -1,34 +1,78 @@
+// Initialize the document dimensions
+setDocDimensions(800, 600);
+
 const config = {
-  docWidth: 1021,
-  docHeight: 1046,
-  gridSize: 78,            // Number of grid cells along one axis
-  cellSize: 3,            // Size of each grid cell
-  lineWidth: 10,            // Width of each line
-  lineColor: 'black'       // Color of the lines
+    strokeWidth: 2 // Width of each feather line
 };
 
-setDocDimensions(config.docWidth, config.docHeight);
+// Function to generate feather lines along the entire stalk
+function generateFeatherLines(numLayers, numLinesPerLayer) {
+    const lines = [];
+    const centerX = 400; // Center of the feather (spine)
+    const startY = 100;  // Starting point of the stalk
+    const endY = 500;    // Ending point of the stalk
+    const stalkLength = endY - startY;
+    const layerSpacing = stalkLength / numLayers; // Space between layers
 
+    for (let layer = 0; layer < numLayers; layer++) {
+        const layerPositionY = startY + layer * layerSpacing; // Position along the stalk
+        const layerRadius = 20 + (layer / numLayers) * 50; // Adjusted radius for barbs
 
-function drawPolyline(polyline) {
-  drawLines([polyline], { stroke: config.lineColor, width: config.lineWidth });
+        for (let i = 0; i < numLinesPerLayer; i++) {
+            const angle = Math.PI / 4 * (i / numLinesPerLayer); // Spread barbs around the stalk
+            const length = layerRadius * (Math.random() * 0.5 + 0.5); // Random length within the layer's radius
+            const curveAmount = 10; // Amount of curve for the barbs
+
+          
+            const controlX = centerX + (length / 2) * Math.cos(angle) + Math.sin(angle) * curveAmount;
+            const controlY = layerPositionY + Math.cos(angle) * curveAmount;
+            const endX = centerX + length * Math.cos(angle);
+            const endY = layerPositionY;
+
+         
+            let line = [[centerX, layerPositionY], [controlX, controlY], [endX, endY]];
+
+         
+            const randomBarbAngle = Math.random() * 180 - 90; // Random angle between -90 and 90 degrees
+            line = bt.rotate([line], randomBarbAngle, [centerX, layerPositionY])[0];
+            lines.push(line);
+
+           
+            let mirrorLine = [[centerX, layerPositionY], [controlX, controlY], [centerX - (endX - centerX), endY]];
+            mirrorLine = bt.rotate([mirrorLine], randomBarbAngle, [centerX, layerPositionY])[0];
+            lines.push(mirrorLine);
+        }
+    }
+
+    return lines;
 }
 
-// Create a grid of polylines (complex)
-for (let x = 0; x < config.gridSize; x++) {
-  for (let y = 0; y < config.gridSize; y++) {
-    const startX = x * config.cellSize;
-    const startY = y * config.cellSize;
-    const endX = startX + config.cellSize;
-    const endY = startY + config.cellSize;
 
-    // Define polylines for each cell
-    const horizontalLine = [[startX, startY], [endX, startY]];
-    const verticalLine = [[startX, startY], [startX, endY]];
+function applyRandomRotation(lines, centerX, centerY) {
+    const randomAngle = Math.random() * 360; // Random angle in degrees
+    return bt.rotate(lines, randomAngle, [centerX, centerY]);
+}
+
+
+function drawFeatherPattern() {
+    const featherLines = generateFeatherLines(30, 20); // Increase the number of layers and lines per layer
+    const centerX = 400;
+    const centerY = 300;
 
     
-    drawPolyline(horizontalLine);
-    drawPolyline(verticalLine);  
-  }
+    const rotatedFeatherLines = applyRandomRotation(featherLines, centerX, centerY);
+
+    
+    rotatedFeatherLines.forEach(line => {
+        drawLines([line], { stroke: 'black', width: config.strokeWidth });
+    });
+
+    
+    const centralAxis = applyRandomRotation(
+        [[[centerX, 100], [centerX, 500]]], centerX, centerY
+    );
+    drawLines(centralAxis, { stroke: 'black', width: 2 });
 }
 
+
+drawFeatherPattern();
