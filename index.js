@@ -1,4 +1,9 @@
-// Initialize the document dimensions
+/*
+@title: Feather
+@author: Amspy
+@snapshot: Feather.jpg
+*/
+
 setDocDimensions(800, 600);
 
 const config = {
