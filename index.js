@@ -35,14 +35,14 @@ function createFeather() {
     [14, 31],
     [0, 0]
   ];
-  const vanes = [bt.catmullRom(vanePoints.map(([x, y]) => [x * (1 + bt.rand() * 0.2), y * (1 + bt.rand() * 0.2)]))]
+  const vanes = [bt.catmullRom(vanePoints.map(([x, y]) => [x * (1 + bt.rand() * 0.4), y * (1 + bt.rand() * 0.3)]))]
 
   // Barbs are Catmull-Rom curves with varying lengths originating at the shaft
   const barbs = []
   for (let i = 0; i < shaft[0].length; i++) {
     const parity = i > shaft[0].length / 2 ? -1 : 1
     const [x, y] = shaft[0][i]
-    const lengthFactor = 0.5 + bt.rand() * 1.5 // Random length factor for variability
+    const lengthFactor = 0.5 + bt.rand() * 1.7 // Random length factor for variability
     barbs.push(bt.catmullRom(
       [
         [x, y],
@@ -70,10 +70,10 @@ function createFeather() {
 // Draw feathers in each corner
 const feathers = []
 const offsets = [
-  [width / 4, height / 4], // Top-left corner
-  [3 * width / 4, height / 4], // Top-right corner
-  [width / 4, 3 * height / 4], // Bottom-left corner
-  [3 * width / 4, 3 * height / 4] // Bottom-right corner
+  [width / 4, height / 4], 
+  [3 * width / 4, height / 4], 
+  [width / 4, 3 * height / 4], 
+  [3 * width / 4, 3 * height / 4]
 ]
 
 for (let i = 0; i < 4; i++) {
@@ -83,6 +83,9 @@ for (let i = 0; i < 4; i++) {
   feathers.push(feather)
 }
 
+// Draw all feathers
+drawLines(feathers.flat())
+bt.merge(feathers.flat());
 // Draw all feathers
 drawLines(feathers.flat())
 bt.merge(feathers.flat());
